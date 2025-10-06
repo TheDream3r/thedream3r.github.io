@@ -1,5 +1,69 @@
 body {
     background-color: #f8f9fa;
+    overflow-x: hidden; /* Verhindert horizontales Scrollen */
+}
+
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    transition: transform 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #34495e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-title {
+    margin: 0;
+    color: white;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.nav {
+    padding: 15px;
+}
+
+.nav-link {
+    color: white !important;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: #34495e !important;
+    color: #0d6efd !important;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 250px; /* Platz für Sidebar auf Desktop */
+    transition: margin-left 0.3s ease;
 }
 
 .converter {
@@ -11,24 +75,45 @@ body {
     display: block;
 }
 
-.nav-link.active {
-    background-color: #e9ecef;
-    color: #0d6efd;
-    font-weight: bold;
+/* Mobile Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
 }
 
 @media (min-width: 992px) {
-    .offcanvas {
-        transform: none !important;
-        visibility: visible !important;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        width: 250px;
-        flex-shrink: 0;
+    .sidebar-toggle {
+        display: none;
     }
+}
 
-    .container {
-        margin-left: 270px;
-    }
+/* Alert Animation */
+.alert {
+    transition: opacity 0.3s ease;
 }

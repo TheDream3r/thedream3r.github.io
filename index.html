@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -50,13 +11,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Seitenleiste (Offcanvas) -->
-    <nav class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="sidebarLabel">Konverter</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h5 class="sidebar-title">Konverter</h5>
+                <button class="btn-close" id="sidebarToggle">&times;</button>
+            </div>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link active" href="#" onclick="showConverter('ascii-hex')">ASCII-Hex-Konverter</a>
@@ -66,52 +27,52 @@
                 </li>
                 <!-- Weitere Konverter hier hinzufügen -->
             </ul>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Hauptinhalt -->
-    <div class="container my-4">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Konverter-Tools</h1>
-            <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
-                ☰ Menü
-            </button>
-        </header>
-        <main>
-            <!-- ASCII-Hex-Konverter -->
-            <section id="ascii-hex" class="converter card active">
-                <div class="card-body">
-                    <h2 class="card-title">ASCII zu Hex Konverter</h2>
-                    <div class="mb-3">
-                        <input type="text" id="asciiInput" class="form-control" placeholder="Text eingeben (ASCII)">
-                        <button class="btn btn-primary mt-2" onclick="convertAsciiToHex()">Zu Hex</button>
+        <!-- Mobile Toggle Button -->
+        <button class="sidebar-toggle d-lg-none" id="mobileToggle">☰ Menü</button>
+
+        <!-- Hauptinhalt -->
+        <main class="main-content">
+            <div class="container my-4">
+                <header class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Konverter-Tools</h1>
+                </header>
+                <!-- ASCII-Hex-Konverter -->
+                <section id="ascii-hex" class="converter card active">
+                    <div class="card-body">
+                        <h2 class="card-title">ASCII zu Hex Konverter</h2>
+                        <div class="mb-3">
+                            <input type="text" id="asciiInput" class="form-control" placeholder="Text eingeben (ASCII)">
+                            <button class="btn btn-primary mt-2" onclick="convertAsciiToHex()">Zu Hex</button>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="hexInput" class="form-control" placeholder="Hex eingeben (z.B. 48656C6C6F)">
+                            <button class="btn btn-primary mt-2" onclick="convertHexToAscii()">Zu ASCII</button>
+                        </div>
+                        <div class="alert alert-info d-none" id="asciiHexResult" role="alert"></div>
                     </div>
-                    <div class="mb-3">
-                        <input type="text" id="hexInput" class="form-control" placeholder="Hex eingeben (z.B. 48656C6C6F)">
-                        <button class="btn btn-primary mt-2" onclick="convertHexToAscii()">Zu ASCII</button>
+                </section>
+                <!-- Dezimal-Binär-Konverter -->
+                <section id="decimal-binary" class="converter card">
+                    <div class="card-body">
+                        <h2 class="card-title">Dezimal zu Binär Konverter</h2>
+                        <div class="mb-3">
+                            <input type="number" id="decimalInput" class="form-control" placeholder="Dezimalzahl eingeben">
+                            <button class="btn btn-primary mt-2" onclick="convertDecimalToBinary()">Zu Binär</button>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="binaryInput" class="form-control" placeholder="Binärzahl eingeben (z.B. 1010)">
+                            <button class="btn btn-primary mt-2" onclick="convertBinaryToDecimal()">Zu Dezimal</button>
+                        </div>
+                        <div class="alert alert-info d-none" id="decimalBinaryResult" role="alert"></div>
                     </div>
-                    <div class="alert alert-info" id="asciiHexResult" role="alert"></div>
-                </div>
-            </section>
-            <!-- Dezimal-Binär-Konverter -->
-            <section id="decimal-binary" class="converter card">
-                <div class="card-body">
-                    <h2 class="card-title">Dezimal zu Binär Konverter</h2>
-                    <div class="mb-3">
-                        <input type="number" id="decimalInput" class="form-control" placeholder="Dezimalzahl eingeben">
-                        <button class="btn btn-primary mt-2" onclick="convertDecimalToBinary()">Zu Binär</button>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" id="binaryInput" class="form-control" placeholder="Binärzahl eingeben (z.B. 1010)">
-                        <button class="btn btn-primary mt-2" onclick="convertBinaryToDecimal()">Zu Dezimal</button>
-                    </div>
-                    <div class="alert alert-info" id="decimalBinaryResult" role="alert"></div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
     </div>
 
-    <!-- Bootstrap JS und Popper -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>

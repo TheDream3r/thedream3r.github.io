@@ -1,3 +1,17 @@
+// Automatisch ersten Konverter laden
+document.addEventListener('DOMContentLoaded', function() {
+    showConverter('ascii-hex');
+});
+
+// Sidebar Toggle für Mobile
+document.getElementById('mobileToggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('active');
+});
+
+document.getElementById('sidebarToggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.remove('active');
+});
+
 function showConverter(converterId) {
     // Alle Konverter ausblenden
     document.querySelectorAll('.converter').forEach(converter => {
@@ -10,11 +24,9 @@ function showConverter(converterId) {
     // Gewählten Konverter und Link aktivieren
     document.getElementById(converterId).classList.add('active');
     document.querySelector(`.nav-link[onclick="showConverter('${converterId}')"]`).classList.add('active');
-    // Sidebar auf Mobilgeräten schließen
+    // Sidebar auf Mobile schließen
     if (window.innerWidth < 992) {
-        const sidebar = document.getElementById('sidebar');
-        const bsOffcanvas = new bootstrap.Offcanvas(sidebar);
-        bsOffcanvas.hide();
+        document.getElementById('sidebar').classList.remove('active');
     }
 }
 
@@ -25,13 +37,15 @@ function convertAsciiToHex() {
         for (let i = 0; i < asciiInput.length; i++) {
             hexOutput += asciiInput.charCodeAt(i).toString(16).padStart(2, '0');
         }
-        document.getElementById('asciiHexResult').textContent = hexOutput.toUpperCase();
-        document.getElementById('asciiHexResult').classList.remove('alert-danger');
-        document.getElementById('asciiHexResult').classList.add('alert-info');
+        const result = document.getElementById('asciiHexResult');
+        result.textContent = hexOutput.toUpperCase();
+        result.classList.remove('d-none', 'alert-danger');
+        result.classList.add('alert-info');
     } catch (error) {
-        document.getElementById('asciiHexResult').textContent = 'Fehler: Ungültige Eingabe';
-        document.getElementById('asciiHexResult').classList.remove('alert-info');
-        document.getElementById('asciiHexResult').classList.add('alert-danger');
+        const result = document.getElementById('asciiHexResult');
+        result.textContent = 'Fehler: Ungültige Eingabe';
+        result.classList.remove('d-none', 'alert-info');
+        result.classList.add('alert-danger');
     }
 }
 
@@ -44,13 +58,15 @@ function convertHexToAscii() {
             const hexPair = hexInput.slice(i, i + 2);
             asciiOutput += String.fromCharCode(parseInt(hexPair, 16));
         }
-        document.getElementById('asciiHexResult').textContent = asciiOutput;
-        document.getElementById('asciiHexResult').classList.remove('alert-danger');
-        document.getElementById('asciiHexResult').classList.add('alert-info');
+        const result = document.getElementById('asciiHexResult');
+        result.textContent = asciiOutput;
+        result.classList.remove('d-none', 'alert-danger');
+        result.classList.add('alert-info');
     } catch (error) {
-        document.getElementById('asciiHexResult').textContent = 'Fehler: Ungültige Hex-Eingabe';
-        document.getElementById('asciiHexResult').classList.remove('alert-info');
-        document.getElementById('asciiHexResult').classList.add('alert-danger');
+        const result = document.getElementById('asciiHexResult');
+        result.textContent = 'Fehler: Ungültige Hex-Eingabe';
+        result.classList.remove('d-none', 'alert-info');
+        result.classList.add('alert-danger');
     }
 }
 
@@ -58,13 +74,15 @@ function convertDecimalToBinary() {
     const decimalInput = document.getElementById('decimalInput').value;
     try {
         const binaryOutput = parseInt(decimalInput).toString(2);
-        document.getElementById('decimalBinaryResult').textContent = binaryOutput;
-        document.getElementById('decimalBinaryResult').classList.remove('alert-danger');
-        document.getElementById('decimalBinaryResult').classList.add('alert-info');
+        const result = document.getElementById('decimalBinaryResult');
+        result.textContent = binaryOutput;
+        result.classList.remove('d-none', 'alert-danger');
+        result.classList.add('alert-info');
     } catch (error) {
-        document.getElementById('decimalBinaryResult').textContent = 'Fehler: Ungültige Eingabe';
-        document.getElementById('decimalBinaryResult').classList.remove('alert-info');
-        document.getElementById('decimalBinaryResult').classList.add('alert-danger');
+        const result = document.getElementById('decimalBinaryResult');
+        result.textContent = 'Fehler: Ungültige Eingabe';
+        result.classList.remove('d-none', 'alert-info');
+        result.classList.add('alert-danger');
     }
 }
 
@@ -72,12 +90,14 @@ function convertBinaryToDecimal() {
     const binaryInput = document.getElementById('binaryInput').value.replace(/\s/g, '');
     try {
         const decimalOutput = parseInt(binaryInput, 2).toString(10);
-        document.getElementById('decimalBinaryResult').textContent = decimalOutput;
-        document.getElementById('decimalBinaryResult').classList.remove('alert-danger');
-        document.getElementById('decimalBinaryResult').classList.add('alert-info');
+        const result = document.getElementById('decimalBinaryResult');
+        result.textContent = decimalOutput;
+        result.classList.remove('d-none', 'alert-danger');
+        result.classList.add('alert-info');
     } catch (error) {
-        document.getElementById('decimalBinaryResult').textContent = 'Fehler: Ungültige Binär-Eingabe';
-        document.getElementById('decimalBinaryResult').classList.remove('alert-info');
-        document.getElementById('decimalBinaryResult').classList.add('alert-danger');
+        const result = document.getElementById('decimalBinaryResult');
+        result.textContent = 'Fehler: Ungültige Binär-Eingabe';
+        result.classList.remove('d-none', 'alert-info');
+        result.classList.add('alert-danger');
     }
 }
